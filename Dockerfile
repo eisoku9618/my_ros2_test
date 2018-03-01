@@ -6,11 +6,16 @@ RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu xenial main" > /etc/apt/
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 421C365BD9FF1F717815A3895523BAEEB01FA116
 
 RUN apt update
+RUN apt upgrade -y
 
-RUN apt install -y lsb-release emacs sudo git wget curl byobu htop
+RUN apt install -y lsb-release emacs sudo git wget curl byobu htop locales
 RUN curl http://repo.ros2.org/repos.key | apt-key add -
 RUN sh -c 'echo "deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main xenial main" > /etc/apt/sources.list.d/ros2-latest.list'
 RUN apt update
+
+RUN locale-gen en_US en_US.UTF-8
+RUN update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV LANG en_US.UTF-8
 
 RUN apt install -y build-essential cppcheck cmake libopencv-dev python-empy python3-dev python3-empy python3-nose python3-pip python3-pyparsing python3-setuptools python3-vcstool python3-yaml libtinyxml-dev libeigen3-dev
 # dependencies for testing
@@ -29,10 +34,14 @@ RUN apt install -y libboost-chrono-dev libboost-date-time-dev libboost-program-o
 # dependencies for RViz
 RUN apt install -y libcurl4-openssl-dev libqt5core5a libqt5gui5 libqt5opengl5 libqt5widgets5 libxaw7-dev libgles2-mesa-dev libglu1-mesa-dev qtbase5-dev
 
+# clone sources
 RUN mkdir -p ~/ros2_ws/src && \
 cd  ~/ros2_ws && \
 wget https://raw.githubusercontent.com/ros2/ros2/release-latest/ros2.repos && \
 vcs-import src < ros2.repos
 RUN apt install libopensplice67
+
+# build
+RUN cd ~/ros2_ws && src/ament/ament_tools/scripts/ament.py build --build-tests --symlink-install
 
 CMD ["/bin/bash"]
