@@ -45,7 +45,8 @@ RUN apt install libopensplice67
 RUN cd ~/ros2_ws && src/ament/ament_tools/scripts/ament.py build --build-tests --symlink-install
 
 # bashrc setting
-RUN echo "" >> ~/.bashrc && echo "source ~/ros2_ws/install/local_setup.bash" >> ~/.bashrc && echo "force_color_prompt=yes" >> ~/.bashrc
+RUN echo "" >> ~/.bashrc && echo "source ~/ros2_ws/install/local_setup.bash" >> ~/.bashrc
+RUN sed -i -e "s/#force_color_prompt=yes/force_color_prompt=yes/g" ~/.bashrc
 
 # for GUI
 RUN apt install -y libcanberra-gtk-module
